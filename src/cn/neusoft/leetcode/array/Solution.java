@@ -105,6 +105,36 @@ public class Solution {
 		return result;
     }
 	
+	/*
+	 * 
+	 * Given an array of integers, return indices of the two numbers such that they add up to a specific target.
+
+		You may assume that each input would have exactly one solution, and you may not use the same element twice.
+		
+		Example:
+		Given nums = [2, 7, 11, 15], target = 9,
+		
+		Because nums[0] + nums[1] = 2 + 7 = 9,
+		return [0, 1].
+		
+		给定一个目标值，求出数组中nums[i] + nums[j] = target 的索引值i j
+		假设有且仅有一个解
+		直接用暴力算法，难度比上面的还低，可是不明白ac率才30多，还可以使用HashTable，因为这里是数组的解法，所以不在此处放出代码
+	 */
+	public int[] twoSum(int[] numbers, int target) {
+        int[] result = new int[2];
+		for(int i = 0 ; i < numbers.length - 1 ; ++i) {
+			for(int j = i + 1 ; j < numbers.length ; ++j) {
+				if(numbers[i] + numbers[j] == target) {
+					result[0] = i;
+					result[1] = j;
+					return result;
+				}
+			}
+		}
+		return result;
+    }
+	
 	@Test
 	public void testMartixReshape() {
 		int[][] nums = new int[][]{{1,2}, {3,4}};
