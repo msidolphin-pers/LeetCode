@@ -1,0 +1,62 @@
+<<<<<<< HEAD
+
+#class file
+*.class 
+
+#package file
+*.war
+*.ear
+*.jar
+
+#kdiff3 ignore
+*.orig
+
+#eclipse ignore
+.settings/
+.project
+.classpath
+
+#maven ignore
+target/
+
+#idea
+.idea/
+/idea/
+*.ipr
+*.iml
+*.iws
+
+#temp file
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+
+#system ignore
+.DS_Store
+Thumbs.db
+=======
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+>>>>>>> be0e78816bfa7113092545b00fcfd15bba0918fa
