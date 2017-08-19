@@ -1,8 +1,6 @@
 package cn.neusoft.leetcode.array;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -106,6 +104,92 @@ public class Solution {
     }
 	
 	/*
+	 * 53. Maximum Subarray
+	 * 最大子数组和
+	 * Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+
+		For example, given the array [-2,1,-3,4,-1,2,1,-5,4],
+		the contiguous subarray [4,-1,2,1] has the largest sum = 6
+	 * 
+	 * 穷举
+	 * 时间复杂度O(n^3)
+	 * 思路：遍历每一个字符，以1-n的长度获取子串，求出最大和
+	 * 超时
+	 */
+	public int maxSubArray(int[] nums) {
+        int max = Integer.MIN_VALUE;
+        if(nums.length == 1) {
+            return nums[0];
+        }
+        for(int i = 0 ; i < nums.length - 1 ; ++i) {
+        	//k是子串长度 第一个元素开头的子串的长度1->n 第一个1->n-1
+            for(int k = 1; k < nums.length - i ; ++k) {
+                int count = 0;
+                int sum = nums[i];
+                for(int j = i + 1 ; j < nums.length ; ++j) {
+                    sum += nums[j];
+                    count++;
+                    if(count == k) {
+                        if(max < sum) {
+                            max = sum;
+                        }
+                        count = 0;
+                    }
+                }
+            }
+        }
+        return max;
+    }
+	
+	/*
+	 * 53. Maximum Subarray
+	 * 穷举2
+	 * 对穷举1的改善
+	 * 超时
+	 */
+	public int maxSubArray2(int[] nums) {
+		int max = Integer.MIN_VALUE;
+        if(nums.length == 1) {
+            return nums[0];
+        }
+        for(int i = 0 ; i < nums.length; ++i) {
+            int sum = nums[i];
+            if(sum > max) {
+                max = sum;
+            }
+            for(int k = i + 1; k < nums.length ; ++k) {
+                sum += nums[k];
+                if(sum > max) {
+                    max = sum;
+                }
+            }
+        }
+        return max;
+    }
+	
+	/*
+	 * 53. Maximum Subarray
+	 * Kadane算法
+	 * 思路：如果加上某个数使得和小于0，那么最大和序列绝对不包含此数，从下一个位置重新获取子数组
+	 */
+    public int maxSubArray3(int[] nums) {
+        int max = Integer.MIN_VALUE;
+        int sum = 0;
+        for(int i = 0 ; i < nums.length ; ++i) {
+            sum += nums[i];
+            if(sum > max) {
+                max = sum;
+            }
+            if(sum < 0) {
+                //结果为负值，包含此值不可能出现最大和
+                sum = 0; 
+            }
+        }
+        return max;
+    }
+	
+	
+	/*
 	 * 
 	 * Given an array of integers, return indices of the two numbers such that they add up to a specific target.
 
@@ -134,6 +218,7 @@ public class Solution {
 		}
 		return result;
     }
+	
 	
 	@Test
 	public void testMartixReshape() {
