@@ -1,6 +1,14 @@
 package cn.neusoft.leetcode.array;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.swing.plaf.synth.SynthSpinnerUI;
 
 import org.junit.Test;
 
@@ -203,7 +211,7 @@ public class Solution {
 		
 		给定一个目标值，求出数组中nums[i] + nums[j] = target 的索引值i j
 		假设有且仅有一个解
-		直接用暴力算法，难度比上面的还低，可是不明白ac率才30多，还可以使用HashTable，因为这里是数组的解法，所以不在此处放出代码
+		直接用暴力算法，还可以使用HashTable，因为这里是数组的解法，所以不在此处放出代码
 	 */
 	public int[] twoSum(int[] numbers, int target) {
         int[] result = new int[2];
@@ -219,6 +227,68 @@ public class Solution {
 		return result;
     }
 	
+	/*
+	 * 排序双指针法 Sorting with Two Pointers
+	 * 
+	 * 复杂度
+		O(n)空间 O(nlogn)时间
+
+		思路
+		首先将原数组复制一遍，对新数组进行排序。排序后将双指针指向头部与尾部元素，进行迭代。如果双指针指向元素之和大于目标和，则将尾部指针向前移一位，反之则将头部指针向后移一位，
+		直到双指针指向元素之和等于目标和，记录这两个元素的值，然后再遍历一遍旧数组，找出这两个元素的下标。
+	 */
+	public int[] twoSum2(int[] numbers, int target) {
+		int[] result = new int[2];
+		int[] clone = numbers.clone();
+		Arrays.sort(clone);
+		int left = 0;
+		int right = numbers.length - 1;
+		Map<Integer, Integer> map = new HashMap<>();
+		while(left <= right) {
+			int sum = clone[left] + clone[right];
+			if(sum == target) {
+				//找出原来的下标
+				//找出result[0]
+				for(int i = 0 ; i < numbers.length ; ++i) {
+					if(clone[left] == numbers[i]) {
+						if(map.containsKey(i)) {
+							continue;
+						}
+						map.put(i, i);
+						result[0] = i;
+						break;
+					}
+				}
+				//找出result[1]
+				for(int j = 0 ; j < numbers.length ; ++j) {
+					if(clone[right] == numbers[j]) {
+						if(map.containsKey(j)) {
+							continue;
+						}
+						result[1] = j;
+						break;
+					}
+				}
+				break;
+			}else {
+				if(sum > target) {
+					right--;
+				}else {
+					left++;
+				}
+			}
+		}
+		return result;
+    }
+	
+	@Test
+	public void testTwoSum() {
+		int[] nums = new int[]{3,3};
+		nums = twoSum2(nums, 6);
+		for (int i : nums) {
+			System.out.println(i);
+		}
+	}
 	
 	/*
 	 * 6. ZigZag Conversion 之字形构造字符串
@@ -492,6 +562,145 @@ public class Solution {
         return max;
     }
 	 
+	/*
+	 * 15. 3Sum
+	 * 
+	 * Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+
+		Note: The solution set must not contain duplicate triplets.
+		
+		For example, given array S = [-1, 0, 1, 2, -1, -4],
+		
+		A solution set is:
+		[
+		  [-1, 0, 1],
+		  [-1, -1, 2]
+		]
+	 * 
+	 */
+	//brute force [-4,-2,-2,-2,0,1,2,2,2,3,3,4,4,6,6]
+    public List<List<Integer>> threeSum(int[] nums) {
+    	//去重复的重要一步！
+    	Arrays.sort(nums); 
+        List<List<Integer>> resultList = new ArrayList<>();
+        //除非重写HashSet，不然无法排重复
+        HashSet<int[]> set = new HashSet<>();
+        int[] sub = new int[3];
+        for(int i = 0 ; i < nums.length - 2 ; ++i) {
+            for(int j = i + 1 ; j < nums.length - 1; ++j) {
+                for(int k = j + 1 ; k < nums.length ; ++k) {
+                    //只有经过排序，才保证ijk的顺序是有序的，才能够使用标记判断是否重复过
+                    if(nums[i] + nums[j] + nums[k] == 0) {
+                        sub[0] = nums[i];
+                    	sub[1] = nums[j];
+                    	sub[2] = nums[k];
+                    	Arrays.sort(sub);
+                    	set.add(sub);
+                    }
+                }
+            }
+        }
+        for(int[] s : set) {
+        	List<Integer> subList = new ArrayList<>();
+        	for(int i : s) {
+            	subList.add(i);
+        	}
+        	resultList.add(subList);
+        }
+        return resultList;
+    }
+    
+    public int[] twoSumCommon(int[] numbers, int offset ,int target) {
+    	boolean isFind = false;
+		int[] result = new int[2];
+		int[] clone = numbers.clone();
+		Arrays.sort(clone);
+		int left = offset + 1;
+		int right = numbers.length - 1;
+		Map<Integer, Integer> map = new HashMap<>();
+		while(left <= right) {
+			int sum = clone[left] + clone[right];
+			if(sum == target) {
+                isFind = true;
+				//找出原来的下标
+				//找出result[0]
+				for(int i = 0 ; i < numbers.length ; ++i) {
+					if(clone[left] == numbers[i]) {
+						if(map.containsKey(i)) {
+							continue;
+						}
+						map.put(i, i);
+						result[0] = i;
+						break;
+					}
+				}
+				//找出result[1]
+				for(int j = 0 ; j < numbers.length ; ++j) {
+					if(clone[right] == numbers[j]) {
+						if(map.containsKey(j)) {
+							continue;
+						}
+                        map.put(j,j);
+						result[1] = j;
+						break;
+					}
+				}
+				break;
+			}else {
+				if(sum > target) {
+					right--;
+				}else {
+					left++;
+				}
+			}
+		}
+        if(isFind) {
+            return result;
+        }
+		return null;
+    }
+    
+    
+    /*
+     * 3SUM
+     * 双指针法：将3SUM转化为2SUM
+     */
+    public List<List<Integer>> threeSum2(int[] nums) {
+    	
+    	Arrays.sort(nums); 
+        List<List<Integer>> resultList = new ArrayList<>();
+        for(int i = 0 ; i < nums.length - 2 ; ++i) {
+//        	if(i > 0 && nums[i] == nums[i-1]) {
+//        		continue;
+//        	}
+        	int target = -nums[i];
+        	int[] result = twoSumCommon(nums, i, target);
+        	if(result != null) {
+	        	List<Integer> subResultList = new ArrayList<>();
+	        	subResultList.add(nums[i]);
+	        	subResultList.add(result[0]);
+	        	subResultList.add(result[1]);
+	        	resultList.add(subResultList);
+        	}
+        }
+        
+        return resultList;
+    }
+    
+    
+    @Test
+    public void test3Sum() {
+    	System.out.println(threeSum2(new int[]{-4,-2,-2,-2,0,1,2,2,2,3,3,4,4,6,6}));
+    }
+    
+    @Test
+    public void testSet() {
+    	HashSet set = new HashSet<>();
+    	set.add(new Integer[]{1,2,3});
+    	set.add(new Integer[]{1,2,3});
+    	System.out.println(set);
+    }
+   
 	
 	@Test
 	public void testRome() {
