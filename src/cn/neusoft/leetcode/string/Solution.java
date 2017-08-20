@@ -46,6 +46,8 @@ public class Solution {
 		return longestPrefix.toString();
 	}
 	
+	
+	
 	@Test
 	public void testLCP() {
 		System.out.println(longestCommonPrefix(new String[]{"ABCD", "ABEF", "ACEF"}));

@@ -442,6 +442,56 @@ public class Solution {
 		 }
 	 }
 	 
+	 /*
+	  * 11. Container With Most Water
+	  * 
+	  * Given n non-negative integers a1, a2, ..., an, where each represents a point at coordinate (i, ai). 
+	  * n vertical lines are drawn such that the two endpoints of line i is at (i, ai) and (i, 0). Find two lines, 
+	  * which together with x-axis forms a container, such that the container contains the most water.
+
+		Note: You may not slant the container and n is at least 2.
+	  * 
+	  * 题意：
+	  * x轴上在1,2,...,n点上有许多垂直的线段，长度依次是a1, a2, ..., an。找出两条线段，使他们和x抽围成的面积最大。返回最大面积，不能倾斜容器（梯形或者长方形）
+	  */
+	 //解法1：暴力算法 超时
+	 public int maxArea(int[] height) {
+        int max = 0;
+        int len = height.length;
+        for(int i = 0 ; i < len - 1 ; ++i) {
+            for(int j = 0 ; j < len ; ++j) {
+                int h = height[i] < height[j] ? height[i] : height[j];
+                int area = (j-i)*h;
+                if(max < area) {
+                    max = area;
+                }
+            }
+        }
+        return max;
+    }
+	 
+	 //解法2：两点聚集
+	 //面积较大的部分一般聚集在高度较高，距离较远的两点
+	 public int maxArea2(int[] height) {
+	    int max = 0;
+        int len = height.length;
+        for(int i = 0, j = len - 1 ; i <= j ;) {
+            int h = height[i] < height[j] ? height[i] : height[j];
+            int area = (j-i) * h;
+            if(area > max) {
+                max = area;
+            }
+            //如果左侧高度小于右侧高度，那么移动左侧指针
+            //试想一下：如果移动右侧指针，那么两线距离减少，因为高度取决于高度低的一方，那么面积必然减少，不可能会出现面积更大的可能，而上面的暴力算法就做了很多无用功
+            if(height[i] <= height[j]) {
+                i++;
+            }else {
+                j--;
+            }
+        }
+        return max;
+    }
+	 
 	
 	@Test
 	public void testRome() {
