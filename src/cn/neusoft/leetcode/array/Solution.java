@@ -220,6 +220,241 @@ public class Solution {
     }
 	
 	
+	/*
+	 * 6. ZigZag Conversion 之字形构造字符串
+	 * 
+	 * The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility)
+
+		P   A   H   N
+		A P L S I I G
+		Y   I   R
+		And then read line by line: "PAHNAPLSIIGYIR"
+		Write the code that will take a string and make this conversion given a number of rows:
+		
+		string convert(string text, int nRows);
+		convert("PAYPALISHIRING", 3) should return "PAHNAPLSIIGYIR".
+	 */
+	public String convert(String s, int numRows) {
+		//行数小于等于1或者大于等于原字符串长度，可以直接返回该串
+		if(numRows <= 1 || numRows >= s.length()) {
+			return s;
+		}
+		StringBuilder stringBuilder = new StringBuilder();
+        int len = s.length();
+        char[][] nums = new char[numRows][len];
+        int rows = 0;
+        int cols = 0;
+        for(int i = 0 ; i < len ; ++i) {
+            nums[rows][cols] = s.charAt(i);
+            //列数为偶数（从0开始）时，行数++，否则--
+            if(cols % 2 == 0) {
+                rows++;
+            }else {
+                rows--;
+            }
+            if(numRows > 2) {
+            	//行数大于2的情况（一般情况）
+            	if(rows == numRows || rows == 0) {
+                    cols++;
+                    //偶数列填满
+                    if(cols % 2 == 0) {
+                    	rows = 0;
+                    }else {
+                    	//奇数列的第一行不填充字符
+                    	rows = numRows - 2;
+                    }
+                }
+            }else if(numRows == 2) {
+            	//行数为2的情况
+            	if(rows >= 1|| rows <= 0) {
+            		cols++;
+            		if(rows >= 1) {
+                        rows = 1;
+                    }else {
+                        rows = 0;
+                    }
+            	}
+            }
+            
+        }
+        //重新构造字符串
+        for(int i = 0 ; i < nums.length ; ++i) {
+            for(int j = 0 ; j < nums[i].length ; ++j) {
+                if(nums[i][j] != 0) {
+                	stringBuilder.append(nums[i][j]);
+                }
+            }
+        }
+        return stringBuilder.toString();
+    }
+	
+	public String convert2(String s, int numRows) {
+	    if(numRows<=1)return s;
+	    //使用StringBuilder忽略列数的影响，无需再考虑该字符应该放在哪一行哪一列，只需考虑应该放到哪一行，上面考虑到列数导致最后写法过于复杂
+	    StringBuilder[] sb=new StringBuilder[numRows];
+	    for(int i=0;i<sb.length;i++){
+	        sb[i]=new StringBuilder("");   //init every sb element **important step!!!!
+	    }
+	    //行数增量，如果是第一行，则行数自增，如果是最后一行，则需要自减
+	    int incre=1;
+	    int index=0;
+	    for(int i=0;i<s.length();i++){
+	        sb[index].append(s.charAt(i));
+	        if(index==0){incre=1;}
+	        if(index==numRows-1){incre=-1;}
+	        index+=incre;
+	    }
+	    String re="";
+	    for(int i=0;i<sb.length;i++){
+	        re+=sb[i];
+	    }
+	    return re.toString();
+	}
+	
+	
+	/*
+	 * 12. Integer to Roman
+	 * 
+	 * 	Given an integer, convert it to a roman numeral.
+
+		Input is guaranteed to be within the range from 1 to 3999.
+	 */
+	 public String intToRoman(int num) {
+        //关键是找出分界数
+        //罗马数字共有7个，即I（1）、V（5）、X（10）、L（50）、C（100）、D（500）和M（1000）。
+        //阿拉伯数字
+        int[] nums = new int[]{1000, 900, 800, 700, 600, 500, 400, 100, 
+                              90,80,70,60,50,40,10,9,8,7,6,5,4,1};
+        //对应罗马数字
+        String[] romanNums = new String[]{"M", "CM", "DCCC", "DCC", "DC", "D", "CD", "C",
+                                          "XC", "LXXX", "LXX", "LX", "L", "XL", "X",
+                                          "IX", "VIII", "VII", "VI", "V", "IV", "I"};
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i = 0 ; i < nums.length ; ++i) {
+            while(num >= nums[i]) {
+                num -= nums[i];
+                stringBuilder.append(romanNums[i]);
+            }
+        }
+        return stringBuilder.toString();
+    }
+	 
+	/*
+	 * 13. Roman to Integer
+	 * 
+	 * Given a roman numeral, convert it to an integer.
+
+	   Input is guaranteed to be within the range from 1 to 3999.
+	 */
+	 public int romanToInt(String s) {
+		//罗马数字共有7个，即I（1）、V（5）、X（10）、L（50）、C（100）、D（500）和M（1000）。
+		//阿拉伯数字
+        int[] nums = new int[]{1000, 500, 100, 50, 10, 5, 1};
+        //对应罗马数字
+        char[] romanNums = new char[]{'M', 'D', 'C', 'L', 'X', 'V', 'I'};
+        int result = 0;
+        int len = s.length();
+        //"DCXXI" 左减右加
+        for(int i = 0 ; i < len ; ) {
+        	boolean flag = false;
+        	for(int j = 0 ; j < romanNums.length ; ++j) {
+        		char ch = s.charAt(i);
+        		char right = 0;
+        		if(i < len - 1){
+        			right = s.charAt(i+1);
+        		}
+        		if(ch == romanNums[j]) {
+        			//考虑减的情况  左减的数字有限制，仅限于I、X、C 左减只能有一位 左减时不可跨越一个位数
+        			if(ch == 'I' && right == 'V') {
+        				flag = true;
+        				result += 4;
+        			}else if(ch == 'I' && right == 'X') {
+        				flag = true;
+        				result += 9;
+        			}else if(ch == 'X' && right == 'L') {
+        				flag = true;
+        				result += 40;
+        			}else if(ch == 'X' && right == 'C') {
+        				flag = true;
+        				result += 90;
+        			}else if(ch == 'C' && right == 'D') {
+        				flag = true;
+        				result += 400;
+        			}else if(ch == 'C' && right == 'M' ) {
+        				flag = true;
+        				result += 900;
+        			}else {
+        				result += nums[j];
+        			}
+        			break;
+        		} 
+        	}
+        	if(flag) {
+        		i = i + 2;
+        	}else {
+        		i = i + 1;
+        	}
+        }
+        return result;
+    }
+	 
+	 /*
+	  * 13. Roman to Integer 改进版
+	  */
+	 public int romanToInt2(String s) {
+	    int result = 0;
+	    int len = s.length();
+	    int last = 1000;
+	    for(int i = 0 ; i < len ; ++i) {
+	    	char ch = s.charAt(i);
+	    	int num = getIntByRoman(ch);
+	    	//example: "MCMXCVI"
+	    	//在罗马数字中，可能需要处理减法的情况，如果在右边发现比之前的数大，那么肯定是减法情形
+	    	if(num > last) {
+	    		//首先需要减去之前加上的数值，然后加上正确的数组 num - last
+	    		result = result - last + (num - last);
+	    	}else {
+	    		result += num;
+	    	}
+	    	last = num;
+	    }
+	    return result;
+	}
+	 
+	 public int getIntByRoman(char ch) {
+		 switch(ch) {
+		 	case 'M' : 
+		 		return 1000;
+		 	case 'D' :
+		 		return 500;
+		 	case 'C' :
+		 		return 100;
+		 	case 'L' :
+		 		return 50;
+		 	case 'X' :
+		 		return 10;
+		 	case 'V' :
+		 		return 5;
+		 	case 'I' :
+		 		return 1;
+		 	default :
+		 		return 0;
+		 }
+	 }
+	 
+	
+	@Test
+	public void testRome() {
+		System.out.println(romanToInt2("MCMXCVI"));
+	}
+	 
+	
+	@Test
+	public void test() {
+		System.out.println(convert2("PAYPALISHIRING", 3));
+	}
+
+	
 	@Test
 	public void testMartixReshape() {
 		int[][] nums = new int[][]{{1,2}, {3,4}};
