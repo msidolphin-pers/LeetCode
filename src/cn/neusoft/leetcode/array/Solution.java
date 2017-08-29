@@ -618,13 +618,13 @@ public class Solution {
 		int left = offset + 1;
 		int right = numbers.length - 1;
 		Map<Integer, Integer> map = new HashMap<>();
-		while(left <= right) {
+		while(left < right) {
 			int sum = clone[left] + clone[right];
 			if(sum == target) {
                 isFind = true;
 				//找出原来的下标
 				//找出result[0]
-				for(int i = 0 ; i < numbers.length ; ++i) {
+				for(int i = offset + 1 ; i < numbers.length ; ++i) {
 					if(clone[left] == numbers[i]) {
 						if(map.containsKey(i)) {
 							continue;
@@ -635,7 +635,7 @@ public class Solution {
 					}
 				}
 				//找出result[1]
-				for(int j = 0 ; j < numbers.length ; ++j) {
+				for(int j = offset + 1 ; j < numbers.length ; ++j) {
 					if(clone[right] == numbers[j]) {
 						if(map.containsKey(j)) {
 							continue;
@@ -688,44 +688,226 @@ public class Solution {
     }
     
     
-    @Test
-    public void test3Sum() {
-    	System.out.println(threeSum2(new int[]{-4,-2,-2,-2,0,1,2,2,2,3,3,4,4,6,6}));
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        Arrays.sort(nums);        
+        int[] visited = new int[nums.length];
+        List<List<Integer>> resultList = new ArrayList<>();
+        int[] result = new int[nums.length];
+        //dfs 和自己匹配
+        dfs(resultList, 0, nums, result, visited);
+        return resultList;
     }
     
-    @Test
-    public void testSet() {
-    	HashSet set = new HashSet<>();
-    	set.add(new Integer[]{1,2,3});
-    	set.add(new Integer[]{1,2,3});
-    	System.out.println(set);
+    public void dfs(List<List<Integer>> resultList, int index, int[] nums, int[] result, int[] visited) {
+        if(index == nums.length) {
+            boolean isNotRepeat = false;
+            //去重复
+            boolean innerTestHasFailed = false;
+            for(List<Integer> list : resultList) {
+                for(int i = 0 ; i < nums.length ; ++i) {
+                    if(list.get(i).intValue() != result[i]) {
+                    	innerTestHasFailed = true;
+                        break;
+                    }
+                }
+                if(innerTestHasFailed) {
+                	isNotRepeat = true;
+                	break;
+                }
+            }
+            if(resultList.size() == 0 || isNotRepeat) {
+                //没有重复才加入到结果中
+                List<Integer> subResultList = new ArrayList<>();
+                for(Integer integer : result) {
+                    subResultList.add(integer);
+                }
+                resultList.add(subResultList);
+            }
+            return;
+        }
+        
+        for(int i = 0 ; i < nums.length ; ++i) {
+            if(visited[i] == 1) {
+                continue;
+            }else {
+                visited[i] = 1;
+            }
+            visited[i] = 1;
+            result[index] = nums[i];
+            dfs(resultList, index + 1, nums, result, visited);
+            visited[i] = 0;
+        }
     }
-   
-	
-	@Test
-	public void testRome() {
-		System.out.println(romanToInt2("MCMXCVI"));
-	}
-	 
-	
-	@Test
-	public void test() {
-		System.out.println(convert2("PAYPALISHIRING", 3));
-	}
+    
+    /*
+     * 54. Spiral Matrix
+     *  在矩阵中 左上角(lr, lc) 和 左下角(rr, rc)可以表示一个矩阵
+     *  
+     */
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> result = new ArrayList<>();
+        int lR = 0;
+        int lC = 0;
+        int rR = matrix.length - 1;
+        if(rR == -1) {
+            return result;
+        }
+        int rC = matrix[0].length - 1;
+        while(lR <= rR && lC <= rC) {
+            //只有一行元素的情况
+            if(lR == rR) {
+                for(int i = lC ; i <= rC ; ++i) {
+                    result.add(matrix[lR][i]);
+                }
+            }else if(lC == rC) { //只有一列元素的情况
+                for(int i = lR ; i <= rR ; ++i) {
+                    result.add(matrix[i][lC]);
+                }
+            } else {//一般情况
+                // x方向右 列变换
+                for(int i = lC ; i < rC ; ++i) {
+                    result.add(matrix[lR][i]);
+                }
+                // y方向下 行变换
+                for(int i = lR ; i < rR ; ++i) {
+                    result.add(matrix[i][rC]);
+                }
+                // x方向左 列变换
+                for(int i = rC ; i > lC ; --i) {
+                    result.add(matrix[rR][i]);
+                }
+                // y方向上 行变换
+                for(int i = rR ; i > lR ; --i) {
+                    result.add(matrix[i][lC]);
+                }
+            }
+            lR++;
+            lC++;
+            rR--;
+            rC--;
+        }
+        return result;
+    }
 
-	
-	@Test
-	public void testMartixReshape() {
-		int[][] nums = new int[][]{{1,2}, {3,4}};
-		int r = 1;
-		int c = 4;
-		nums = matrixReshape(nums, r, c);
-		for(int i = 0 ; i < nums.length ; ++i) {
-			for(int j = 0 ; j < nums[i].length ; ++j) {
-				System.out.print(nums[i][j] + "	");
-			}
-			System.out.println();
-		}
-	}
-				
+    /*
+     * 283. Move Zeroes 
+     * 
+     *  Given an array nums, write a function to move all 0's to the end of it while maintaining the relative order of the non-zero elements.
+
+		For example, given nums = [0, 1, 0, 3, 12], after calling your function, nums should be [1, 3, 12, 0, 0].
+		
+		Note:
+		You must do this in-place without making a copy of the array.
+		Minimize the total number of operations.
+		
+		第一思路：将所有的非零元素保存到另一个数组中，再将其覆盖到原数组前面，最后将原数组剩下的元素修改为0
+			Time Complexity：O(n) 
+			Space Complexity：O(n)
+		
+		题意：将数组中的所有0元素移动到数组中所有非零元素的最后面，不能额外的开空间
+		
+     * 
+     */
+    public void moveZeroes(int[] nums) {
+    	/*
+    	 * Time Complexity: O(n)
+    	 * Space Complexity: O(1)
+    	 */
+    	
+        for(int i = 0, j = 0 ; i < nums.length ; ++i) {
+            if(nums[i] != 0) {
+            	//只有指针j指向0才需要进行交换
+                if(nums[j] == 0) {
+                    //可以通过计算进行交换...
+                    // int temp = nums[j];
+                    // nums[j] = nums[i];
+                    // nums[i] = temp;
+                    //但是既然是0的话，那么直接赋值就行了
+                    nums[j] = nums[i];
+                    nums[i] = 0;
+                }
+                //继续寻找非零元素
+                ++j;
+            }
+        }
+    }
+    
+    /*
+     * 80. Remove Duplicates from Sorted Array II
+     * 
+     * Follow up for "Remove Duplicates":
+		What if duplicates are allowed at most twice?
+		
+		For example,
+		Given sorted array nums = [1,1,1,2,2,3],
+		
+		Your function should return length = 5, with the first five elements of nums being 1, 1, 2, 2 and 3. It doesn't matter what you leave beyond the new length.
+     	
+     	思路：使用一个counter统计每一个元素出现过的次数，对于数次小于3（n）次的数，将其放到数组前面，对于次数大于3次的元素，跳过
+     * 
+     * 
+     */
+    public int removeDuplicatesII(int[] nums) {
+    	/*
+    	 * Time Complexity: O(n)
+    	 * Space Complexity: O(1)
+    	 */
+        int index = 0;
+        //默认出现一次
+        int count = 1;
+        for(int i = 0 ; i < nums.length ; ++i) {
+            if(i > 0 && nums[i] == nums[i-1]) {
+                count++;
+                //如果该元素出现次数大于等于3次，那么就不需要将该元素超过限制的部分填充到数组前
+                if(count > 2) {
+                    continue;
+                }
+            }else {
+                //重新统计“新元素”的个数
+                count = 1;
+            }
+            nums[index++] = nums[i];
+        }
+        return index;
+    }
+    
+    /*
+     * 75. Sort Colors 
+     * Given an array with n objects colored red, white or blue, sort them so that objects of the same color are adjacent, with the colors in the order red, white and blue.
+
+		Here, we will use the integers 0, 1, and 2 to represent the color red, white, and blue respectively.
+		
+		Note:
+		You are not suppose to use the library's sort function for this problem.
+		
+		 
+		 题意就是使得原数组的次序为0在左边1在中间3在右边
+		 在没有更好的方法的时候，可以使用复杂度低的排序算法
+         对于这个问题：取值范围仅限于0-2，那么如果使用计数排序，时间复杂度为O(n)
+     */
+    
+    public void sortColors(int[] nums) {
+    	/*
+    	 * Counting sort
+    	 * Time Complexity: O(n)
+    	 * Space Complexity: O(k) k为元素的取值范围
+    	 */
+    	
+        // Arrays.sort(nums);
+    	// 判断数组元素是否合法
+        int[] counter = new int[3];
+        for(int i = 0 ; i < counter.length ; ++i) {
+            counter[i] = 0;
+        }
+        for(int i = 0 ; i < nums.length ; ++i) {
+            counter[nums[i]]++;
+        }
+        int index = 0;
+        for(int i = 0 ; i < counter.length ; ++i) {
+            for(int j = 0 ; j <  counter[i] ; ++j) {
+                nums[index++] = i;
+            }
+        }
+    }
+    
 }

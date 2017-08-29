@@ -1,5 +1,14 @@
 package cn.neusoft.leetcode.list;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.Test;
+
 /**
  * 
 * @Title: Solution.java 
@@ -97,5 +106,46 @@ public class Solution {
         return head;
     }
 	
+	public ListNode deleteDuplicates(ListNode head) {
+        if(head == null || head.next == null) {
+            return head;
+        }
+        ListNode guard = new ListNode(-1);
+        guard.next = head;
+        head = guard;
+        //上一个不重复的节点，初始next指向第一个节点
+        ListNode prev = head;        
+        //现在cur的指向是第一个节点，之后cur的指向是不重复的节点 
+        ListNode  cur = prev.next;
+        //不能使cur != null cur.next = null足以说明该节点是一个不重复的节点
+        while(cur.next != null) {
+            boolean isRepeat = false;
+            //移动cur指针到不重复的节点
+            while(cur.next != null && cur.val == cur.next.val) {
+                isRepeat = true;
+                cur = cur.next;
+            }
+            if(isRepeat) {
+                 //使得上一个不重复的节点指向下一个不重复的节点
+                prev.next = cur.next;
+                //试探此节点是否重复
+                cur = cur.next;
+            }else {
+                prev = cur;
+                cur = cur.next;
+            }
+        }
+        prev.next = cur;
+        return guard.next;
+    }
 	
+	
+	
+	@Test
+	public void test() {
+		System.out.println(-0);
+		
+//		System.out.println(deleteDuplicates(ListNode.createList(new int[]{1,2,3,3,4,4,5})));
+		
+	}
 }
